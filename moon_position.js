@@ -3,6 +3,9 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
   const compassNeedle = document.querySelector('#compass .needle');
   const moonMarker = document.querySelector('#compass .moon-marker');
 
+  // Mumbai's static magnetic declination in degrees (East)
+  const staticDeclination = 0.5;
+
   // Function to convert azimuth to clock position
   const azimuthToClock = (azimuth) => {
     const normalizedAzimuth = (azimuth + 360) % 360; // Normalize azimuth to 0–360°
@@ -10,35 +13,15 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
     return hour === 0 ? 12 : hour; // Adjust for 12 o'clock
   };
 
-  // Function to fetch magnetic declination from NOAA's API
-  const fetchMagneticDeclination = async (latitude, longitude) => {
-    const apiKey = 'QkfYPUBgutoGbeDaKWALTKXXNffzYYTu'; // API Key
-    const url = `https://api.weather.gov/alerts/active/area/${latitude},${longitude}?apiKey=${apiKey}`;
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error('Failed to fetch magnetic declination');
-      }
-      console.log("Magnetic Declination API Response:", data); // Print the response to the console
-      // The actual declination should be retrieved here; make sure to adjust path
-      return data.features[0].properties.magdeclination;
-    } catch (error) {
-      console.error('Error fetching magnetic declination:', error.message);
-      output.innerHTML = `<p>Error fetching magnetic declination: ${error.message}</p>`;
-      throw error; // Rethrow error for further handling
-    }
-  };
-
   // Step 1: Get user's location
   navigator.geolocation.getCurrentPosition(async (position) => {
     const { latitude, longitude } = position.coords;
 
     try {
-      // Step 2: Fetch magnetic declination
-      const declination = await fetchMagneticDeclination(latitude, longitude);
+      // Use static magnetic declination (Mumbai's declination)
+      const declination = staticDeclination;
 
-      // Step 3: Get moonrise information using SunCalc.js
+      // Step 2: Get moonrise information using SunCalc.js
       const moonTimes = SunCalc.getMoonTimes(new Date(), latitude, longitude);
       const moonRiseAzimuth = SunCalc.getMoonPosition(moonTimes.rise, latitude, longitude).azimuth * (180 / Math.PI); // Convert to degrees
       const fixedMoonAzimuth = (moonRiseAzimuth + 360) % 360; // Normalize to 0–360°
@@ -50,13 +33,13 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
 
       output.innerHTML = `
         <p>Your location: Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}</p>
-        <p>Magnetic declination: ${declination.toFixed(2)}°</p>
+        <p>Static magnetic declination for Mumbai: ${declination.toFixed(2)}° (East)</p>
         <p>Moon will rise at azimuth: ${fixedMoonAzimuth.toFixed(2)}° (true north)</p>
         <p>Moonrise direction adjusted for compass: ${adjustedMoonAzimuth.toFixed(2)}°</p>
         <p>Moonrise clock position: ${moonClockPosition} o'clock</p>
       `;
 
-      // Step 4: Update compass orientation based on device's rotation
+      // Step 3: Update compass orientation based on device's rotation
       window.addEventListener('deviceorientation', (event) => {
         const compassHeading = event.webkitCompassHeading || event.alpha; // For iOS use webkitCompassHeading
         const normalizedHeading = (compassHeading + declination + 360) % 360; // Adjust compass reading to true north
@@ -78,7 +61,7 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
 
         output.innerHTML = `
           <p>Your location: Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}</p>
-          <p>Magnetic declination: ${declination.toFixed(2)}°</p>
+          <p>Static magnetic declination for Mumbai: ${declination.toFixed(2)}° (East)</p>
           <p>Moon will rise at azimuth: ${fixedMoonAzimuth.toFixed(2)}° (true north)</p>
           <p>Moonrise direction adjusted for compass: ${adjustedMoonAzimuth.toFixed(2)}°</p>
           <p>Moonrise clock position: ${moonClockPosition} o'clock</p>
