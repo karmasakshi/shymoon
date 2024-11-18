@@ -10,14 +10,24 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
     return hour === 0 ? 12 : hour; // Adjust for 12 o'clock
   };
 
-  // Function to fetch magnetic declination from World Magnetic Model API
+  // Function to fetch magnetic declination from NOAA's API
   const fetchMagneticDeclination = async (latitude, longitude) => {
-    const response = await fetch(
-      `https://api.wmm.com/declination?latitude=${latitude}&longitude=${longitude}`
-    );
-    if (!response.ok) throw new Error('Failed to fetch magnetic declination');
-    const data = await response.json();
-    return data.declination; // Declination in degrees
+    const apiKey = 'QkfYPUBgutoGbeDaKWALTKXXNffzYYTu'; // API Key
+    const url = `https://api.weather.gov/alerts/active/area/${latitude},${longitude}?apiKey=${apiKey}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch magnetic declination');
+      }
+      console.log("Magnetic Declination API Response:", data); // Print the response to the console
+      // The actual declination should be retrieved here; make sure to adjust path
+      return data.features[0].properties.magdeclination;
+    } catch (error) {
+      console.error('Error fetching magnetic declination:', error.message);
+      output.innerHTML = `<p>Error fetching magnetic declination: ${error.message}</p>`;
+      throw error; // Rethrow error for further handling
+    }
   };
 
   // Step 1: Get user's location
@@ -77,6 +87,7 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
         `;
       });
     } catch (error) {
+      console.error('Error:', error.message);
       output.innerHTML = `<p>Error: ${error.message}</p>`;
     }
   }, (err) => {
