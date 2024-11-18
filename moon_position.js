@@ -3,9 +3,6 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
   const compassNeedle = document.querySelector('#compass .needle');
   const moonMarker = document.querySelector('#compass .moon-marker');
 
-  const NOAA_EMAIL = 'sawely4@cryptodon.space';
-  const NOAA_TOKEN = 'QkfYPUBgutoGbeDaKWALTKXXNffzYYTu';
-
   // Function to convert azimuth to clock position
   const azimuthToClock = (azimuth) => {
     const normalizedAzimuth = (azimuth + 360) % 360; // Normalize azimuth to 0–360°
@@ -13,14 +10,14 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
     return hour === 0 ? 12 : hour; // Adjust for 12 o'clock
   };
 
-  // Function to fetch magnetic declination
+  // Function to fetch magnetic declination from World Magnetic Model API
   const fetchMagneticDeclination = async (latitude, longitude) => {
     const response = await fetch(
-      `https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=${latitude}&lon1=${longitude}&key=${NOAA_TOKEN}&email=${NOAA_EMAIL}&resultFormat=json`
+      `https://api.wmm.com/declination?latitude=${latitude}&longitude=${longitude}`
     );
     if (!response.ok) throw new Error('Failed to fetch magnetic declination');
     const data = await response.json();
-    return data.result[0].declination; // Declination in degrees
+    return data.declination; // Declination in degrees
   };
 
   // Step 1: Get user's location
