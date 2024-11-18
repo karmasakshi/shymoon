@@ -3,6 +3,13 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
   const compassNeedle = document.querySelector('#compass .needle');
   const moonMarker = document.querySelector('#compass .moon-marker');
 
+  // Function to convert azimuth to clock position
+  const azimuthToClock = (azimuth) => {
+    const normalizedAzimuth = (azimuth + 360) % 360; // Normalize azimuth to 0–360°
+    const hour = Math.round(normalizedAzimuth / 30); // Divide into 12 segments (30° each)
+    return hour === 0 ? 12 : hour; // Adjust for 12 o'clock
+  };
+
   // Step 1: Get user's location
   navigator.geolocation.getCurrentPosition(async (position) => {
     const { latitude, longitude } = position.coords;
@@ -11,6 +18,7 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
     const moonTimes = SunCalc.getMoonTimes(new Date(), latitude, longitude);
     const moonRiseAzimuth = SunCalc.getMoonPosition(moonTimes.rise, latitude, longitude).azimuth * (180 / Math.PI); // Convert to degrees
     const fixedMoonAzimuth = (moonRiseAzimuth + 360) % 360; // Normalize to 0–360°
+    const moonClockPosition = azimuthToClock(fixedMoonAzimuth);
 
     // Place the moon marker on the compass
     moonMarker.style.transform = `translate(50%, -50%) rotate(${fixedMoonAzimuth}deg)`;
@@ -18,6 +26,7 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
     output.innerHTML = `
       <p>Your location: Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}</p>
       <p>Moon will rise at azimuth: ${fixedMoonAzimuth.toFixed(2)}°</p>
+      <p>Moonrise direction: ${moonClockPosition} o'clock</p>
     `;
 
     // Step 3: Update compass orientation based on device's rotation
@@ -43,6 +52,7 @@ if ('geolocation' in navigator && 'DeviceOrientationEvent' in window) {
       output.innerHTML = `
         <p>Your location: Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}</p>
         <p>Moon will rise at azimuth: ${fixedMoonAzimuth.toFixed(2)}°</p>
+        <p>Moonrise direction: ${moonClockPosition} o'clock</p>
         <p>Compass heading: ${normalizedHeading.toFixed(2)}°</p>
         <p>Point towards the ${direction} (${relativeAzimuth.toFixed(2)}° relative to North)</p>
       `;
