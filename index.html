@@ -3,12 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
   <title>Moonrise Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    #compass {
+      position: relative;
+      margin: 20px auto;
+      width: 200px;
+      height: 200px;
+      border: 5px solid #000;
+      border-radius: 50%;
+    }
+    #compass .needle {
+      position: absolute;
+      width: 4px;
+      height: 100px;
+      background: red;
+      top: 50px;
+      left: 98px;
+      transform-origin: bottom;
+      transform: rotate(0deg);
+      transition: transform 0.1s ease-out;
+    }
+    #compass .moon-pointer {
+      position: absolute;
+      width: 4px;
+      height: 90px;
+      background: blue;
+      top: 55px;
+      left: 98px;
+      transform-origin: bottom;
+      transform: rotate(0deg);
+      transition: transform 0.1s ease-out;
+    }
+    #output {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
   <h1>Moonrise Tracker</h1>
+  <div id="compass">
+    <div class="needle"></div>
+    <div class="moon-pointer"></div>
+  </div>
   <div id="output"></div>
-  <script src="moon.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <script src="moon_position.js"></script>
 </body>
 </html>
