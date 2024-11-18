@@ -18,6 +18,7 @@
       height: 200px;
       border: 5px solid #000;
       border-radius: 50%;
+      overflow: hidden;
     }
     #compass .needle {
       position: absolute;
@@ -26,20 +27,20 @@
       background: red;
       top: 50px;
       left: 98px;
-      transform-origin: bottom;
+      transform-origin: bottom center;
       transform: rotate(0deg);
       transition: transform 0.1s ease-out;
     }
-    #compass .moon-pointer {
+    #compass .moon-marker {
       position: absolute;
-      width: 4px;
-      height: 90px;
+      width: 10px;
+      height: 10px;
       background: blue;
-      top: 55px;
-      left: 98px;
-      transform-origin: bottom;
-      transform: rotate(0deg);
-      transition: transform 0.1s ease-out;
+      border-radius: 50%;
+      top: 0;
+      left: 95px;
+      transform-origin: center;
+      transform: translate(50%, -50%) rotate(0deg);
     }
     #output {
       margin-top: 20px;
@@ -50,7 +51,7 @@
   <h1>Moonrise Tracker</h1>
   <div id="compass">
     <div class="needle"></div>
-    <div class="moon-pointer"></div>
+    <div class="moon-marker"></div>
   </div>
   <div id="output"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
